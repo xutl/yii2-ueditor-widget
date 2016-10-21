@@ -4,21 +4,22 @@
  * @copyright Copyright (c) 2012 TintSoft Technology Co. Ltd.
  * @license http://www.tintsoft.com/license/
  */
-namespace xutl\umeditor;
+namespace xutl\ueditor;
 
 use Yii;
 use yii\web\AssetBundle;
 
 /**
  * Class MarkdownEditorAsset
- * @package xutl\editormd
+ * @package xutl\ueditor
  */
 class UEditorAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/xutl/yii2-umeditor-widget/assets';
+    public $sourcePath = '@vendor/xutl/yii2-ueditor-widget/assets';
 
     public $js = [
-        'editormd.min.js',
+        'ueditor.config.js',
+        'ueditor.all.min.js',
     ];
 
     public $css = [

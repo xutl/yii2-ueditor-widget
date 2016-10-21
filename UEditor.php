@@ -4,18 +4,16 @@
  * @copyright Copyright (c) 2012 TintSoft Technology Co. Ltd.
  * @license http://www.tintsoft.com/license/
  */
-namespace xutl\umeditor;
+namespace xutl\ueditor;
 
 use Yii;
 use yii\helpers\Json;
 use yii\helpers\Html;
-use yii\helpers\Inflector;
-use yii\web\JsExpression;
 use yii\widgets\InputWidget;
 
 /**
  * Class UEditor
- * @package xutl\editormd
+ * @package xutl\ueditor
  */
 class UEditor extends InputWidget
 {
@@ -23,13 +21,13 @@ class UEditor extends InputWidget
     /**
      * @var array the options for the Bootstrap date time picker JS plugin.
      * Please refer to the Bootstrap date time picker plugin Web page for possible options.
-     * @see https://github.com/pandao/editor.md
+     * @see http://fex.baidu.com/ueditor/
      */
     public $clientOptions = [];
 
     /**
      * {@inheritDoc}
-     * @see \Leaps\Base\Object::init()
+     * @see \yii\base\Object::init()
      */
     public function init()
     {
@@ -39,10 +37,9 @@ class UEditor extends InputWidget
         }
 
         $this->clientOptions = array_merge([
-            'width' => "100%",
-            'height' => 380,
-            'watch' => false,
-            'autoFocus' => false
+            'autoHeightEnabled' => true,
+            'initialFrameWidth' => '100%',
+            'initialFrameHeight' => '300',
         ], $this->clientOptions);
     }
 
@@ -52,15 +49,12 @@ class UEditor extends InputWidget
     public function run()
     {
         if ($this->hasModel()) {
-            $textarea = Html::activeTextArea($this->model, $this->attribute, $this->options);
+            echo Html::activeTextArea($this->model, $this->attribute, $this->options);
         } else {
-            $textarea = Html::textArea($this->name, $this->value, $this->options);
+            echo Html::textArea($this->name, $this->value, $this->options);
         }
-        $assets = MarkdownEditorAsset::register($this->view);
-        $this->clientOptions['path'] = new JsExpression("'{$assets->baseUrl}/lib/'");
+        UEditorAsset::register($this->view);
         $options = empty ($this->clientOptions) ? '' : Json::htmlEncode($this->clientOptions);
-        $varName = Inflector::classify('editor' . $this->id);
-        $this->view->registerJs("var editor{$this->id} = new editormd(\"{$varName}\", {$options});");
-        echo '<div id="' . $varName . '">' . $textarea . '</div>';
+        $this->view->registerJs("var {$this->id} = UE.getEditor(\"{$this->options['id']}\", {$options});");
     }
 }
