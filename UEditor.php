@@ -55,6 +55,6 @@ class UEditor extends InputWidget
         }
         UEditorAsset::register($this->view);
         $options = empty ($this->clientOptions) ? '' : Json::htmlEncode($this->clientOptions);
-        $this->view->registerJs("var {$this->id} = UE.getEditor(\"{$this->options['id']}\", {$options});");
+        $this->view->registerJs("UE.getEditor(\"{$this->options['id']}\", {$options});");
     }
 }
