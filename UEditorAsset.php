@@ -22,10 +22,6 @@ class UEditorAsset extends AssetBundle
         'ueditor.all.min.js',
     ];
 
-    public $css = [
-        'css/editormd.min.css',
-    ];
-
     public $depends = [
         'yii\web\JqueryAsset',
     ];

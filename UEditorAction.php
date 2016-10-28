@@ -8,11 +8,13 @@ namespace xutl\ueditor;
 
 use Yii;
 use yii\base\Action;
+use yii\web\Response;
+use yii\helpers\FileHelper;
 
 /**
- * UMeditorAction class file.
+ * UEditorAction class file.
  */
-class UMeditorAction extends Action
+class UEditorAction extends Action
 {
     /**
      * @var string file input name.
@@ -23,7 +25,7 @@ class UMeditorAction extends Action
      * @var string the directory to store temporary files during conversion. You may use path alias here.
      * If not set, it will use the "plupload" subdirectory under the application runtime path.
      */
-    public $tempPath = '@runtime/umeditor';
+    public $tempPath = '@runtime/ueditor';
 
     /**
      * @var integer the permission to be set for newly created cache files.
