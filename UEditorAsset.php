@@ -15,11 +15,15 @@ use yii\web\AssetBundle;
  */
 class UEditorAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/xutl/yii2-ueditor-widget/assets';
+    public $sourcePath = '@xutl/ueditor/assets';
 
     public $js = [
         'ueditor.config.js',
         'ueditor.all.min.js',
+    ];
+
+    public $css = [
+        'themes/iframe.css',
     ];
 
     public $depends = [

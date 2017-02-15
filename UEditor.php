@@ -7,9 +7,9 @@
 namespace xutl\ueditor;
 
 use Yii;
-use yii\helpers\Url;
 use yii\helpers\Json;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\InputWidget;
 
 /**
@@ -41,8 +41,7 @@ class UEditor extends InputWidget
             'autoHeightEnabled' => true,
             'initialFrameWidth' => '100%',
             'initialFrameHeight' => '300',
-            'emotionLocalization' => true,
-            'serverUrl' => Url::to(['ueditor']),
+            'serverUrl' => Url::to(['/attachment/upload/ueditor']),
             'lang' => Yii::$app->language == 'zh-CN' ? 'zh-cn' : 'en',
         ], $this->clientOptions);
     }
