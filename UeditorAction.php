@@ -10,6 +10,7 @@ use Yii;
 use yii\base\Action;
 use yii\web\Response;
 use yii\helpers\ArrayHelper;
+use yuncms\attachment\AttachmentTrait;
 use yuncms\attachment\models\Attachment;
 use yuncms\attachment\components\Uploader;
 
@@ -19,6 +20,8 @@ use yuncms\attachment\components\Uploader;
  */
 class UEditorAction extends Action
 {
+    use AttachmentTrait;
+
     /**
      * @var array 客户端配置参数
      */
@@ -27,31 +30,14 @@ class UEditorAction extends Action
      * @var array 允许上传的图片文件后缀
      */
     public $imageAllowFiles;
-
     /**
      * @var array 允许上传的视频文件后缀
      */
     public $videoAllowFiles;
-
     /**
      * @var array 允许上传的普通文件后缀
      */
     public $fileAllowFiles;
-
-
-    private $maxUploadSize;
-
-    /**
-     * 返回允许上传的最大大小单位 MB
-     * @return int the max upload size in MB
-     */
-    public function getMaxUploadSize()
-    {
-        $maxUpload = (int)(ini_get('upload_max_filesize'));
-        $maxPost = (int)(ini_get('post_max_size'));
-        $memoryLimit = (int)(ini_get('memory_limit'));
-        return min($maxUpload, $maxPost, $memoryLimit);
-    }
 
     /**
      * Initializes the action and ensures the temp path exists.
@@ -62,17 +48,16 @@ class UEditorAction extends Action
         //关闭CSRF
         $this->controller->enableCsrfValidation = false;
         //将系统默认的后缀限制,转换成ue专用的
-        $this->imageAllowFiles = $this->normalizeExtension(Yii::$app->settings->get('imageAllowFiles','attachment'));
-        $this->videoAllowFiles = $this->normalizeExtension(Yii::$app->settings->get('videoAllowFiles','attachment'));
-        $this->fileAllowFiles = $this->normalizeExtension(Yii::$app->settings->get('fileAllowFiles','attachment'));
-        //获取系统上传限制
-        $this->maxUploadSize = $this->getMaxUploadSize();
+        $this->imageAllowFiles = $this->normalizeExtension($this->getSetting('imageAllowFiles'));
+        $this->videoAllowFiles = $this->normalizeExtension($this->getSetting('videoAllowFiles'));
+        $this->fileAllowFiles = $this->normalizeExtension($this->getSetting('fileAllowFiles'));
+
 
         $this->options = ArrayHelper::merge([
             "imageActionName" => "upload-image",
             "imageFieldName" => "upfile",
             /* 上传大小限制，单位B */
-            "imageMaxSize" => $this->getMaxUploadByte(Yii::$app->settings->get('imageMaxSize','attachment')),
+            "imageMaxSize" => $this->getMaxUploadByte($this->getSetting('imageMaxSize')),
             /* 上传图片格式显示 */
             "imageAllowFiles" => $this->imageAllowFiles,
             "imageCompressEnable" => true,
@@ -83,7 +68,7 @@ class UEditorAction extends Action
             "scrawlActionName" => "upload-scrawl",
             "scrawlFieldName" => "upfile",
             /* 上传大小限制，单位B */
-            "scrawlMaxSize" => $this->getMaxUploadByte(Yii::$app->settings->get('imageMaxSize','attachment')),
+            "scrawlMaxSize" => $this->getMaxUploadByte($this->getSetting('imageMaxSize')),
             /* 图片访问路径前缀 */
             "scrawlUrlPrefix" => "",
             "scrawlInsertAlign" => "none",
@@ -99,7 +84,7 @@ class UEditorAction extends Action
             "catcherFieldName" => "source",
             "catcherUrlPrefix" => "",
             /* 上传大小限制，单位B */
-            "catcherMaxSize" => $this->getMaxUploadByte(Yii::$app->settings->get('imageMaxSize','attachment')),
+            "catcherMaxSize" => $this->getMaxUploadByte($this->getSetting('imageMaxSize')),
             /* 抓取图片格式显示 */
             "catcherAllowFiles" => $this->imageAllowFiles,
 
@@ -108,7 +93,7 @@ class UEditorAction extends Action
             "videoFieldName" => "upfile",
             "videoUrlPrefix" => "",
             /* 视频访问路径前缀 */
-            "videoMaxSize" => $this->getMaxUploadByte(Yii::$app->settings->get('videoMaxSize','attachment')),
+            "videoMaxSize" => $this->getMaxUploadByte($this->getSetting('videoMaxSize')),
             /* 上传大小限制，单位B，默认100MB */
             "videoAllowFiles" => $this->videoAllowFiles,
 
@@ -116,7 +101,7 @@ class UEditorAction extends Action
             "fileActionName" => "upload-file",
             "fileFieldName" => "upfile",
             "fileUrlPrefix" => "",
-            "fileMaxSize" => $this->getMaxUploadByte(Yii::$app->settings->get('fileMaxSize','attachment')),
+            "fileMaxSize" => $this->getMaxUploadByte($this->getSetting('fileMaxSize')),
             /* 上传大小限制，单位B，默认50MB */
             "fileAllowFiles" => $this->fileAllowFiles,
             /* 上传文件格式显示 */
@@ -180,7 +165,7 @@ class UEditorAction extends Action
                 $fieldName = $this->options['imageFieldName'];
                 $config = [
                     'maxFiles' => 1,
-                    'extensions' => Yii::$app->settings->get('imageAllowFiles','attachment'),
+                    'extensions' =>  $this->getSetting('imageAllowFiles'),
                     'checkExtensionByMimeType' => false,
                     "maxSize" => $this->options['imageMaxSize'],
                 ];
@@ -189,7 +174,7 @@ class UEditorAction extends Action
                 $fieldName = $this->options['videoFieldName'];
                 $config = [
                     'maxFiles' => 1,
-                    'extensions' => Yii::$app->settings->get('videoAllowFiles','attachment'),
+                    'extensions' =>  $this->getSetting('videoAllowFiles'),
                     'maxSize' => $this->options['videoMaxSize'],
                     'checkExtensionByMimeType' => false,
                 ];
@@ -198,7 +183,7 @@ class UEditorAction extends Action
                 $fieldName = $this->options['fileFieldName'];
                 $config = [
                     'maxFiles' => 1,
-                    'extensions' => Yii::$app->settings->get('fileAllowFiles','attachment'),
+                    'extensions' =>  $this->getSetting('fileAllowFiles'),
                     'maxSize' => $this->options['fileMaxSize'],
                     'checkExtensionByMimeType' => false,
                 ];
@@ -221,7 +206,7 @@ class UEditorAction extends Action
         /* 上传配置 */
         $config = [
             'maxFiles' => 1,
-            'extensions' => Yii::$app->settings->get('imageAllowFiles','attachment'),
+            'extensions' =>  $this->getSetting('imageAllowFiles'),
             'checkExtensionByMimeType' => false,
             "maxSize" => $this->options['imageMaxSize'],
             "oriName" => "scrawl.png"
@@ -243,7 +228,7 @@ class UEditorAction extends Action
         /* 上传配置 */
         $config = [
             'maxFiles' => 1,
-            'extensions' => Yii::$app->settings->get('imageAllowFiles','attachment'),
+            'extensions' => $this->getSetting('imageAllowFiles'),
             'checkExtensionByMimeType' => false,
             "maxSize" => $this->options['imageMaxSize'],
             "oriName" => "remote.png"
@@ -312,31 +297,5 @@ class UEditorAction extends Action
         } else {
             return ["state" => "no match file", "list" => [], "start" => $offset, "total" => $total];
         }
-    }
-
-    /**
-     * 格式化后缀
-     *
-     * @param string $extensions 后缀数组
-     * @return mixed
-     */
-    private function normalizeExtension($extensions)
-    {
-        $extensions = explode(',', $extensions);
-        array_walk($extensions, function (&$value) {
-            $value = '.' . $value;
-        });
-        return $extensions;
-    }
-
-    /**
-     * 返回允许上传的最大大小单位 Byte
-     * @param string $maxSize 最大上传大小MB
-     * @return int the max upload size in Byte
-     */
-    public function getMaxUploadByte($maxSize)
-    {
-        $maxSize = (int)$maxSize;
-        return min($this->maxUploadSize, $maxSize) * 1024 * 1024;
     }
 }
